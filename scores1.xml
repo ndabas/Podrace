@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scores>
 	<title>Scores for sports events</title>
-	<score>
-		<event date="1020721572636">Cricket</event>
-		<position n="1">K</position>
-		<position n="2">G</position>
-		<position n="3">D</position>
-		<position n="4">V</position>
-	</score>
-	<score><event date="1039466890372">Table Tennis</event><position n="1">K</position><position n="2">D</position><position n="3">G</position><position n="4">V</position></score><score><event date="1020722456542">Hockey</event><position n="1">K</position><position n="2">K</position><position n="3">K</position><position n="4">K</position></score><score><event date="1022791264449">Swimming</event><position n="1">K</position><position n="2">G</position><position n="3">K</position><position n="4">D</position></score><score><event date="1020197104042">Volleyball</event><position n="1">K</position><position n="2">G</position><position n="3">D</position><position n="4">V</position></score></scores>
+	<score><event date="1020112685731">Table Tennis</event><positions D="2" G="3" K="1" V="4"/></score></scores>

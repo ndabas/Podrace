@@ -8,7 +8,7 @@
         
         body, table
         {
-            background-color: #fbfafb;
+            background-color: #000000;
             color: #000000;
             font-family: Tahoma; font-size: 8.25pt;
             scrollbar-base-color: #e5e4e8;

@@ -12,7 +12,7 @@
         var points = 0;
         while(node = nodeList.nextNode())
         {
-            var pos = parseInt(node.attributes.getNamedItem("n").text);
+            var pos = parseInt(node.text);
             points += scoreMap[pos - 1];
         }
         
@@ -127,18 +127,18 @@
             <tr>
                 <td><xsl:value-of select="event" /></td>
                 <td nowrap="nowrap"><xsl:value-of select="user:formatDateFromNode(.)" /></td>
-                <td align="center"><xsl:value-of select="user:score(position[text() = 'D'])" /></td>
-                <td align="center"><xsl:value-of select="user:score(position[text() = 'G'])" /></td>
-                <td align="center"><xsl:value-of select="user:score(position[text() = 'K'])" /></td>
-                <td align="center"><xsl:value-of select="user:score(position[text() = 'V'])" /></td>
+                <td align="center"><xsl:value-of select="user:score(positions/@D)" /></td>
+                <td align="center"><xsl:value-of select="user:score(positions/@G)" /></td>
+                <td align="center"><xsl:value-of select="user:score(positions/@K)" /></td>
+                <td align="center"><xsl:value-of select="user:score(positions/@V)" /></td>
             </tr>
         </xsl:for-each>
         </tbody>
         <tfoot>
-            <xsl:variable name="totalD" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/position[text() = 'D'])"/>
-            <xsl:variable name="totalG" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/position[text() = 'G'])"/>
-            <xsl:variable name="totalK" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/position[text() = 'K'])"/>
-            <xsl:variable name="totalV" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/position[text() = 'V'])"/>
+            <xsl:variable name="totalD" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/positions/@D)"/>
+            <xsl:variable name="totalG" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/positions/@G)"/>
+            <xsl:variable name="totalK" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/positions/@K)"/>
+            <xsl:variable name="totalV" select="user:score(//score[(number(event/@date) &gt;= number($firstDate)) and (number(event/@date) &lt;= number($lastDate))]/positions/@V)"/>
             <tr style="font-weight: bold;">
                 <td colspan="2">Totals</td>
                 <td align="center"><xsl:value-of select="$totalD" /></td>

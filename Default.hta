@@ -296,7 +296,7 @@
     data.scores.add = function()
     {
         var args = {EventName:"", EventDate:-1,
-            Pos1Name:"", Pos2Name:"", Pos3Name:"", Pos4Name:""};
+            D:-1, G:-1, K:-1, V:-1};
         data.state.index = -1;
         data.showDetails("scoredetail.xml", args, data.scores.editCallback);
     };
@@ -349,10 +349,10 @@
         var node = allRows.item(index);
         row.EventName = node.selectSingleNode("event").text;
         row.EventDate = node.selectSingleNode("event/@date").text;
-        row.Pos1Name = node.selectSingleNode("position[@n='1']").text;
-        row.Pos2Name = node.selectSingleNode("position[@n='2']").text;
-        row.Pos3Name = node.selectSingleNode("position[@n='3']").text;
-        row.Pos4Name = node.selectSingleNode("position[@n='4']").text;
+        row.D = node.selectSingleNode("positions/@D").text;
+        row.G = node.selectSingleNode("positions/@G").text;
+        row.K = node.selectSingleNode("positions/@K").text;
+        row.V = node.selectSingleNode("positions/@V").text;
         
         delete xmlDoc;
         
@@ -378,41 +378,29 @@
             
             var elem = xmlDoc.createElement("score");
             var eEvent = xmlDoc.createElement("event");
-            var ePos1 = xmlDoc.createElement("position");
-            var ePos2 = xmlDoc.createElement("position");
-            var ePos3 = xmlDoc.createElement("position");
-            var ePos4 = xmlDoc.createElement("position");
+            var ePos = xmlDoc.createElement("positions");
             var aDate = xmlDoc.createAttribute("date");
-            var aN1 = xmlDoc.createAttribute("n");
-            var aN2 = xmlDoc.createAttribute("n");
-            var aN3 = xmlDoc.createAttribute("n");
-            var aN4 = xmlDoc.createAttribute("n");
+            var aD = xmlDoc.createAttribute("D");
+            var aG = xmlDoc.createAttribute("G");
+            var aK = xmlDoc.createAttribute("K");
+            var aV = xmlDoc.createAttribute("V");
             
             eEvent.text = row.EventName;
             aDate.text = row.EventDate;
             eEvent.attributes.setNamedItem(aDate);
             
-            ePos1.text = row.Pos1Name;
-            aN1.text = "1";
-            ePos1.attributes.setNamedItem(aN1);
+            aD.text = row.D;
+            aG.text = row.G;
+            aK.text = row.K;
+            aV.text = row.V;
             
-            ePos2.text = row.Pos2Name;
-            aN2.text = "2";
-            ePos2.attributes.setNamedItem(aN2);
-            
-            ePos3.text = row.Pos3Name;
-            aN3.text = "3";
-            ePos3.attributes.setNamedItem(aN3);
-            
-            ePos4.text = row.Pos4Name;
-            aN4.text = "4";
-            ePos4.attributes.setNamedItem(aN4);
+            ePos.attributes.setNamedItem(aD);
+            ePos.attributes.setNamedItem(aG);
+            ePos.attributes.setNamedItem(aK);
+            ePos.attributes.setNamedItem(aV);
             
             elem.appendChild(eEvent);
-            elem.appendChild(ePos1);
-            elem.appendChild(ePos2);
-            elem.appendChild(ePos3);
-            elem.appendChild(ePos4);
+            elem.appendChild(ePos);
             xmlDoc.documentElement.appendChild(elem);
         }
         else
@@ -420,10 +408,10 @@
             var node = allRows.item(index);
             node.selectSingleNode("event").text = row.EventName;
             node.selectSingleNode("event/@date").text = row.EventDate;
-            node.selectSingleNode("position[@n=\'1\']").text = row.Pos1Name;
-            node.selectSingleNode("position[@n=\'2\']").text = row.Pos2Name;
-            node.selectSingleNode("position[@n=\'3\']").text = row.Pos3Name;
-            node.selectSingleNode("position[@n=\'4\']").text = row.Pos4Name;
+            node.selectSingleNode("positions/@D").text = row.D;
+            node.selectSingleNode("positions/@G").text = row.G;
+            node.selectSingleNode("positions/@K").text = row.K;
+            node.selectSingleNode("positions/@V").text = row.V;
         }
         
         xmlDoc.save(data.state.xml);

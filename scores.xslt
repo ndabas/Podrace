@@ -31,10 +31,10 @@
                 <tr>
                     <th>Event name</th>
                     <th>Date</th>
-                    <th width="50">First</th>
-                    <th width="50">Second</th>
-                    <th width="50">Third</th>
-                    <th width="50">Fourth</th>
+                    <th width="50">D</th>
+                    <th width="50">G</th>
+                    <th width="50">K</th>
+                    <th width="50">V</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,10 +42,10 @@
                     <tr>
                         <td><xsl:value-of select="event" /></td>
                         <td nowrap="nowrap"><xsl:value-of select="user:formatDate(.)" /></td>
-                        <td align="center"><xsl:value-of select="position[@n='1']" /></td>
-                        <td align="center"><xsl:value-of select="position[@n='2']" /></td>
-                        <td align="center"><xsl:value-of select="position[@n='3']" /></td>
-                        <td align="center"><xsl:value-of select="position[@n='4']" /></td>
+                        <td align="center"><xsl:value-of select="positions/@D" /></td>
+                        <td align="center"><xsl:value-of select="positions/@G" /></td>
+                        <td align="center"><xsl:value-of select="positions/@K" /></td>
+                        <td align="center"><xsl:value-of select="positions/@V" /></td>
                     </tr>
                 </xsl:for-each>
             </tbody>

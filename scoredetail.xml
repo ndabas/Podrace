@@ -27,21 +27,21 @@
             s += d.getYear();
             inputEventDate.value = s;
         }
-        if(args["Pos1Name"] != null)
+        if(args["D"] != null)
         {
-            valuePos1Name.value = args["Pos1Name"];
+            valueD.value = args["D"];
         }
-        if(args["Pos2Name"] != null)
+        if(args["G"] != null)
         {
-            valuePos2Name.value = args["Pos2Name"];
+            valueG.value = args["G"];
         }
-        if(args["Pos3Name"] != null)
+        if(args["K"] != null)
         {
-            valuePos3Name.value = args["Pos3Name"];
+            valueK.value = args["K"];
         }
-        if(args["Pos4Name"] != null)
+        if(args["V"] != null)
         {
-            valuePos4Name.value = args["Pos4Name"];
+            valueV.value = args["V"];
         }
     }
     
@@ -105,36 +105,36 @@
     <input type="hidden" id="valueEventDate" value="-1" />
     <button id="ButtonSelectDate" onclick="return ButtonSelectDate_onclick();">...</button>
     <br /><br />
-    1<sup>st</sup> Position: <br />
-    <select id="valuePos1Name" style="width: 180px;">
-    <option value="D">Dayanand House</option>
-    <option value="G">Gurunanak House</option>
-    <option value="K">Kabir House</option>
-    <option value="V">Vivekanand House</option>
+    Dayanand House: <br />
+    <select id="valueD" style="width: 180px;">
+    <option value="1">First (5 Points)</option>
+    <option value="2">Second (3 Points)</option>
+    <option value="3">Third (2 Points)</option>
+    <option value="4">Fourth (1 Points)</option>
     </select>
     <br />
-    2<sup>nd</sup> Position: <br />
-    <select id="valuePos2Name" style="width: 180px;">
-    <option value="D">Dayanand House</option>
-    <option value="G">Gurunanak House</option>
-    <option value="K">Kabir House</option>
-    <option value="V">Vivekanand House</option>
+    Gurunanak House: <br />
+    <select id="valueG" style="width: 180px;">
+    <option value="1">First (5 Points)</option>
+    <option value="2">Second (3 Points)</option>
+    <option value="3">Third (2 Points)</option>
+    <option value="4">Fourth (1 Points)</option>
     </select>
     <br />
-    3<sup>rd</sup> Position: <br />
-    <select id="valuePos3Name" style="width: 180px;">
-    <option value="D">Dayanand House</option>
-    <option value="G">Gurunanak House</option>
-    <option value="K">Kabir House</option>
-    <option value="V">Vivekanand House</option>
+    Kabir House: <br />
+    <select id="valueK" style="width: 180px;">
+    <option value="1">First (5 Points)</option>
+    <option value="2">Second (3 Points)</option>
+    <option value="3">Third (2 Points)</option>
+    <option value="4">Fourth (1 Points)</option>
     </select>
     <br />
-    4<sup>th</sup> Position: <br />
-    <select id="valuePos4Name" style="width: 180px;">
-    <option value="D">Dayanand House</option>
-    <option value="G">Gurunanak House</option>
-    <option value="K">Kabir House</option>
-    <option value="V">Vivekanand House</option>
+    Vivekanand House: <br />
+    <select id="valueV" style="width: 180px;">
+    <option value="1">First (5 Points)</option>
+    <option value="2">Second (3 Points)</option>
+    <option value="3">Third (2 Points)</option>
+    <option value="4">Fourth (1 Points)</option>
     </select>
     <br />
     </span>
