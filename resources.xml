@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string id="errSelectRow">You must select a row.</string>
+	<string id="errLoadData">There was an error loading data for the specified row.</string>
+	<string id="confirmDelete">Are you sure you want to delete this item? This change cannot be undone.</string>
+</resources>

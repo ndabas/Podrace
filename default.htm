@@ -1,0 +1,817 @@
+<html>
+<head>
+    <hta:application contextMenu="no" maximizeButton="no"
+     selection="no" border="dialog" />
+    <title>Podrace</title>
+    <object codebase="msxml4.cab#version=4,10,9404,0" type="application/x-oleobject" classid="clsid:88d969c0-f192-11d4-a65f-0040963251e5">
+    </object>
+    
+    <script language="JScript">
+        
+    var data = new Object();
+    
+    data.state = new Object();
+    data.state.xml = "";
+    data.state.xsl = "";
+    data.state.xsltParams = null;
+    data.state.index = -1;
+    
+    data.buttonStates = new Object();
+    data.buttonStates["events.xslt"] = new Array(1, 1, 1, 1);
+    data.buttonStates["eventslist.xslt"] = new Array(0, 0, 0, 1);
+    data.buttonStates["scores.xslt"] = new Array(1, 1, 1, 1);
+    data.buttonStates["scoreslist.xslt"] = new Array(0, 0, 0, 1);
+    data.buttonStates["report.xslt"] = new Array(0, 0, 0, 1);
+    data.buttonStates["reportslist.xslt"] = new Array(0, 0, 0, 0);
+        
+    data.categories = new Object();
+    data.categories["events.xslt"] = 0;
+    data.categories["eventslist.xslt"] = 0;
+    data.categories["scores.xslt"] = 1;
+    data.categories["scoreslist.xslt"] = 1;
+    data.categories["report.xslt"] = 2;
+    data.categories["reportslist.xslt"] = 2;
+    
+    data.updateUI = function()
+    {
+        var tbState, category, xsl = data.state.xsl;
+        
+        if(data.buttonStates[xsl] != null)
+        {
+            tbState = data.buttonStates[xsl];
+            SpanAdd.disabled = !tbState[0];
+            SpanEdit.disabled = !tbState[1];
+            SpanDelete.disabled = !tbState[2];
+            SpanPrint.disabled = !tbState[3];
+        }
+            
+        if(data.categories[xsl] != null)
+        {
+            category = data.categories[xsl];
+            DivEvents.select(category == 0);
+            DivScores.select(category == 1);
+            DivReports.select(category == 2);
+        }
+    };
+    
+    
+    data.displayXML = function(xml, xsl, xsltParams)
+    {
+        var xmlDoc, xslDoc, xslt, xslProc;
+        xslt = new ActiveXObject("Msxml2.XSLTemplate.4.0");
+        xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xslDoc = new ActiveXObject("Msxml2.FreeThreadedDOMDocument.4.0");
+        
+        xmlDoc.async = false;
+        xslDoc.async = false;
+        xmlDoc.load(xml);
+        xslDoc.load(xsl);
+        
+        xslt.stylesheet = xslDoc;
+        xslProc = xslt.createProcessor();
+        xslProc.input = xmlDoc;
+        if(xsltParams != null)
+        {
+            for(param in xsltParams)
+            {
+                xslProc.addParameter(param, xsltParams[param]);
+            }
+        }
+        xslProc.transform();
+            
+        DivContent.innerHTML = xslProc.output;
+            
+        delete xslProc;
+        delete xslt;
+        delete xslDoc;
+        delete xmlDoc;
+        
+        data.state.xml = xml.toLowerCase();
+        data.state.xsl = xsl.toLowerCase();
+        data.state.xsltParams = xsltParams ? xsltParams : null;
+        data.state.index = -1;
+            
+        data.updateUI();
+    };
+        
+    data.displayXHTML = function(xhtml)
+    {
+        var xhtmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xhtmlDoc.async = false;
+        xhtmlDoc.load(xhtml);
+            
+        DivContent.innerHTML = xhtmlDoc.xml;
+            
+        delete xhtmlDoc;
+            
+        data.state.xml = xhtml.toLowerCase();
+        data.state.xsl = "";
+        data.state.index = -1;
+    };
+    
+    data.refresh = function()
+    {
+        if((data.state.xsl.length != 0) && (data.state.xml.length != 0))
+        {
+            data.displayXML(data.state.xml, data.state.xsl, data.state.xsltParams);
+        }
+        else
+        {
+            if(data.state.xml.length != 0)
+            {
+                data.displayXHTML(data.state.xml);
+            }
+        }
+    };
+    
+    data.detailsUnloadCallback = function()
+    {
+        var rValue = data.detailsDialog.window.returnValue;
+        data.detailsDialog.callback(rValue);
+        delete data.detailsDialog;
+    };
+    
+    data.showDetails = function(xml, args, callback)
+    {
+        var xmlDoc, xslDoc, xhtml;
+        xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xslDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xslDoc.async = false;
+        xmlDoc.load(xml);
+        xslDoc.load("detail.xslt");
+            
+        xhtml = xmlDoc.transformNode(xslDoc);
+            
+        delete xmlDoc;
+        delete xslDoc;
+        
+        var features = "toolbar=0,location=0,directories=0,status=0,"
+            + "menubar=0,scrollbars=1,resizable=0,width=200,height=100";
+        var win = window.open("about:blank", "details", features);
+        
+        win.document.open();
+        win.document.write(xhtml);
+        win.document.close();
+        
+        if(typeof(callback) == "function")
+        {
+            data.detailsDialog = new Object();
+            data.detailsDialog.window = win;
+            data.detailsDialog.callback = callback;
+        }
+        
+        while(!win.Form_Init);
+        win.Form_Init(args);
+    };
+    
+    data.events = new Object();
+    data.events.editCallback = function(rValue)
+    {
+        data.events.setRow(data.state.index, rValue);
+        data.refresh();
+    };
+    data.events.add = function()
+    {
+        var args = {EventName:""};
+        data.state.index = -1;
+        data.showDetails("eventdetail.xml", args, data.events.editCallback, 360, 100);
+    };
+    data.events.edit = function()
+    {
+        if(data.state.index < 0)
+        {
+            alert(resources.getString("errSelectRow"));
+            return;
+        }
+        
+        var args = data.events.getRow(data.state.index);
+        if(args == null)
+        {
+            alert(resources.getString("errLoadData"));
+            return;
+        }
+        
+        data.showDetails("eventdetail.xml", args, data.events.editCallback);
+    };
+    data.events.del = function()
+    {
+        if(data.state.index < 0)
+        {
+            alert(resources.getString("errSelectRow"));
+            return;
+        }
+        
+        if(!confirm(resources.getString("confirmDelete")))
+        {
+            return;
+        }
+        
+        data.events.deleteRow(data.state.index);
+        data.refresh();
+    };
+    data.events.getRow = function(index)
+    {
+        if((data.state.xml.length == 0) || (data.state.xsl != "events.xslt"))
+        {
+            return null;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(data.state.xml);
+        
+        var allRows = xmlDoc.getElementsByTagName("event");
+        var row = new Object();
+        row.EventName = allRows.item(index).text;
+        
+        delete xmlDoc;
+        
+        return row;
+    };
+    data.events.setRow = function(index, row)
+    {
+        if((data.state.xml.length == 0) || (data.state.xsl != "events.xslt")
+            || (row == null))
+        {
+            return null;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(data.state.xml);
+        
+        var allRows = xmlDoc.getElementsByTagName("event");
+        if((index > (allRows.length - 1)) || index < 0)
+        {
+            // add
+            index = allRows.length;
+            var elem = xmlDoc.createElement("event");
+            elem.text = row.EventName;
+            xmlDoc.documentElement.appendChild(elem);
+        }
+        else
+        {
+            allRows.item(index).text = row.EventName;
+        }
+        
+        xmlDoc.save(data.state.xml);
+        
+        delete xmlDoc;
+        
+        return index;
+    };
+    data.events.deleteRow = function(index)
+    {
+        if((data.state.xml.length == 0) || (data.state.xsl != "events.xslt"))
+        {
+            return -1;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(data.state.xml);
+        
+        var allRows = xmlDoc.getElementsByTagName("event");
+        var row = allRows.item(index);
+        if(row == null)
+        {
+            return -1;
+        }
+        
+        xmlDoc.documentElement.removeChild(row);
+        xmlDoc.save(data.state.xml);
+        
+        delete xmlDoc;
+        
+        return index;
+    };
+    
+    data.scores = new Object();
+    data.scores.editCallback = function(rValue)
+    {
+        data.scores.setRow(data.state.index, rValue);
+        data.refresh();
+    };
+    data.scores.add = function()
+    {
+        var args = {EventName:"", EventDate:-1,
+            Pos1Name:"", Pos2Name:"", Pos3Name:"", Pos4Name:""};
+        data.state.index = -1;
+        data.showDetails("scoredetail.xml", args, data.scores.editCallback);
+    };
+    data.scores.edit = function()
+    {
+        if(data.state.index < 0)
+        {
+            alert(resources.getString("errSelectRow"));
+            return;
+        }
+        
+        var args = data.scores.getRow(data.state.index);
+        if(args == null)
+        {
+            alert(resources.getString("errLoadData"));
+            return;
+        }
+        
+        data.showDetails("scoredetail.xml", args, data.scores.editCallback);
+    };
+    data.scores.del = function()
+    {
+        if(data.state.index < 0)
+        {
+            alert(resources.getString("errSelectRow"));
+            return;
+        }
+        
+        if(!confirm(resources.getString("confirmDelete")))
+        {
+            return;
+        }
+        
+        data.scores.deleteRow(data.state.index);
+        data.refresh();
+    };
+    data.scores.getRow = function(index)
+    {
+        if((data.state.xml.length == 0) || (data.state.xsl != "scores.xslt"))
+        {
+            return null;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(data.state.xml);
+        
+        var allRows = xmlDoc.getElementsByTagName("score");
+        var row = new Object();
+        var node = allRows.item(index);
+        row.EventName = node.selectSingleNode("event").text;
+        row.EventDate = node.selectSingleNode("event/@date").text;
+        row.Pos1Name = node.selectSingleNode("position[@n='1']").text;
+        row.Pos2Name = node.selectSingleNode("position[@n='2']").text;
+        row.Pos3Name = node.selectSingleNode("position[@n='3']").text;
+        row.Pos4Name = node.selectSingleNode("position[@n='4']").text;
+        
+        delete xmlDoc;
+        
+        return row;
+    };
+    data.scores.setRow = function(index, row)
+    {
+        if((data.state.xml.length == 0) || (data.state.xsl != "scores.xslt")
+            || (row == null))
+        {
+            return null;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(data.state.xml);
+        
+        var allRows = xmlDoc.getElementsByTagName("score");
+        if((index > (allRows.length - 1)) || index < 0)
+        {
+            // add
+            index = allRows.length;
+            
+            var elem = xmlDoc.createElement("score");
+            var eEvent = xmlDoc.createElement("event");
+            var ePos1 = xmlDoc.createElement("position");
+            var ePos2 = xmlDoc.createElement("position");
+            var ePos3 = xmlDoc.createElement("position");
+            var ePos4 = xmlDoc.createElement("position");
+            var aDate = xmlDoc.createAttribute("date");
+            var aN1 = xmlDoc.createAttribute("n");
+            var aN2 = xmlDoc.createAttribute("n");
+            var aN3 = xmlDoc.createAttribute("n");
+            var aN4 = xmlDoc.createAttribute("n");
+            
+            eEvent.text = row.EventName;
+            aDate.text = row.EventDate;
+            eEvent.attributes.setNamedItem(aDate);
+            
+            ePos1.text = row.Pos1Name;
+            aN1.text = "1";
+            ePos1.attributes.setNamedItem(aN1);
+            
+            ePos2.text = row.Pos2Name;
+            aN2.text = "2";
+            ePos2.attributes.setNamedItem(aN2);
+            
+            ePos3.text = row.Pos3Name;
+            aN3.text = "3";
+            ePos3.attributes.setNamedItem(aN3);
+            
+            ePos4.text = row.Pos4Name;
+            aN4.text = "4";
+            ePos4.attributes.setNamedItem(aN4);
+            
+            elem.appendChild(eEvent);
+            elem.appendChild(ePos1);
+            elem.appendChild(ePos2);
+            elem.appendChild(ePos3);
+            elem.appendChild(ePos4);
+            xmlDoc.documentElement.appendChild(elem);
+        }
+        else
+        {
+            var node = allRows.item(index);
+            node.selectSingleNode("event").text = row.EventName;
+            node.selectSingleNode("event/@date").text = row.EventDate;
+            node.selectSingleNode("position[@n=\'1\']").text = row.Pos1Name;
+            node.selectSingleNode("position[@n=\'2\']").text = row.Pos2Name;
+            node.selectSingleNode("position[@n=\'3\']").text = row.Pos3Name;
+            node.selectSingleNode("position[@n=\'4\']").text = row.Pos4Name;
+        }
+        
+        xmlDoc.save(data.state.xml);
+        
+        delete xmlDoc;
+        
+        return index;
+    };
+    data.scores.deleteRow = function(index)
+    {
+        if((data.state.xml.length == 0) || (data.state.xsl != "scores.xslt"))
+        {
+            return -1;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(data.state.xml);
+        
+        var allRows = xmlDoc.getElementsByTagName("score");
+        var row = allRows.item(index);
+        if(row == null)
+        {
+            return -1;
+        }
+        
+        xmlDoc.documentElement.removeChild(row);
+        xmlDoc.save(data.state.xml);
+        
+        delete xmlDoc;
+        
+        return index;
+    };
+    
+    data.handlers = new Object();
+    data.handlers.add = new Object();
+    data.handlers.add["events.xslt"] = data.events.add;
+    data.handlers.add["scores.xslt"] = data.scores.add;
+    data.handlers.edit = new Object();
+    data.handlers.edit["events.xslt"] = data.events.edit;
+    data.handlers.edit["scores.xslt"] = data.scores.edit;
+    data.handlers.del = new Object();
+    data.handlers.del["events.xslt"] = data.events.del;
+    data.handlers.del["scores.xslt"] = data.scores.del;
+    
+    var resources = new Object();
+    
+    resources.xml = "";
+    resources.load = function(xmlSource)
+    {
+        resources.xml = xmlSource;
+        resources.refresh();
+    };
+    resources.refresh = function()
+    {
+        if(resources.xml.length == 0)
+        {
+            return false;
+        }
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(resources.xml);
+        
+        if(resources.all)
+        {
+            delete resources.all;
+        }
+        
+        resources.all = new Object();
+        
+        var strings = xmlDoc.getElementsByTagName("string");
+        strings.reset();
+        var node = null;
+        while(node = strings.nextNode())
+        {
+            var id = node.attributes.getNamedItem("id").text;
+            resources.all[id] = node.text;
+        }
+        
+        delete xmlDoc;
+        
+        return true;
+    };
+    resources.getString = function(id)
+    {
+        return resources.all ? resources.all[id] : null;
+    };
+    
+        
+    function button_init(elem)
+    {
+        elem._selected = false;
+        elem.hover = function()
+        {
+            elem.className = elem._selected ? "buttonSelected" : "buttonHover";
+            return true;
+        };
+        elem.out = function()
+        {
+            elem.className = elem._selected ? "buttonSelected" : "buttonOut";
+            return true;
+        };
+        elem.select = function(sel)
+        {
+            var value = false;
+            if(typeof sel == "boolean")
+            {
+                value = sel;
+            }
+            if(typeof sel == "string")
+            {
+                var lVal = sel.toLowerCase();
+                value = (lVal != "false") && (lVal != "no") && (lVal != "0");
+            }
+            elem._selected = value;
+            elem.className = value ? "buttonSelected" : "buttonOut";
+        };
+            
+        elem.onselectstart = function()
+        {
+            event.cancelBubble = true;
+            event.returnValue = false;
+        };
+        elem.onmouseenter = elem.hover;
+        elem.onmouseleave = elem.out;
+            
+        elem.out();
+    }
+        
+    function body_onLoad()
+    {
+        var x, y, h, w;
+        h = document.body.scrollHeight + 40;
+        w = document.body.scrollWidth + 10;
+        window.resizeTo(w, h);
+        x = (screen.availWidth - document.body.offsetWidth) / 2;
+        y = (screen.availHeight - document.body.offsetHeight) / 2;
+        window.moveTo(x, y);
+        document.body.scroll = "no";
+        
+        var buttons = new Array(
+            "DivEvents",
+            "DivScores",
+            "DivReports",
+            "SpanAdd",
+            "SpanEdit",
+            "SpanDelete",
+            //"SpanChange",
+            "SpanPrint"
+        );
+            
+        for(var i = 0; i < buttons.length; i++)
+        {
+            button_init(document.getElementById(buttons[i]));
+            // button_init(document.all[buttons[i]]);
+        }
+        
+        resources.load("resources.xml");
+        
+        data.displayXHTML("welcome.xml");
+    }
+    
+    var monthNames = new Array(
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    );
+    
+    function selectDate(value)
+    {
+        return window.showModalDialog("calendar.htm",
+            value,
+            "dialogHeight: 280px; dialogWidth: 360px; status: no; help: no;");
+    }
+    
+    function formatDate(value)
+    {
+        var d = new Date(value);
+        var s = "";
+        s += d.getDate() + " ";
+        s += monthNames[d.getMonth()] + " ";
+        s += d.getYear();
+        return s;
+    }
+        
+    function TableData_onRowSelect()
+    {
+        data.state.index = event.row.rowIndex - 1;
+    }
+        
+    function DivEvents_onClick()
+    {
+        data.displayXML("index.xml", "eventslist.xslt");
+    }
+    
+    function DivScores_onClick()
+    {
+        data.displayXML("index.xml", "scoreslist.xslt");
+    }
+    
+    function DivReports_onClick()
+    {
+        data.displayXML("index.xml", "reportslist.xslt");
+    }
+    
+    function SpanAdd_onClick()
+    {
+        var fn = data.handlers.add[data.state.xsl];
+        if(typeof(fn) == "function")
+        {
+            fn();
+        }
+    }
+    
+    function SpanEdit_onClick()
+    {
+        var fn = data.handlers.edit[data.state.xsl];
+        if(typeof(fn) == "function")
+        {
+            fn();
+        }
+    }
+    
+    function SpanDelete_onClick()
+    {
+        var fn = data.handlers.del[data.state.xsl];
+        if(typeof(fn) == "function")
+        {
+            fn();
+        }
+    }
+    
+    function SpanPrint_onClick()
+    {
+        var path;
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var file = fso.CreateTextFile("report.htm", true);
+        var header = fso.OpenTextFile("reporthead.htm");
+        var footer = fso.OpenTextFile("reportfoot.htm");
+        
+        if(data.state.index != -1)
+        {
+            data.refresh();
+        }
+        
+        file.Write(header.ReadAll());
+        file.Write(DivContent.innerHTML);
+        file.Write(footer.ReadAll());
+        file.Close();
+        
+        var word = new ActiveXObject("Word.Application");
+        word.Visible = true;
+        var doc = word.Documents.Open(fso.GetAbsolutePathName("report.htm"));
+        doc.Activate();
+    }
+    
+    </script>
+    <style type="text/css">
+        
+        body, table
+        {
+            background-color: #fbfafb;
+            color: #000000;
+            font-family: Tahoma; font-size: 8.25pt;
+            scrollbar-base-color: #e5e4e8;
+        }
+        input, button, select
+        {
+            color: #000000;
+            font-family: Tahoma; font-size: 8.25pt;
+        }
+        
+        tfoot, thead
+        {
+            font-weight: bold;
+        }
+        
+        a:link, a:visited, a
+        {
+            color: #316ac5;
+        }
+        
+        .buttonOut
+        {
+            border: 1px solid #e5e4e8;
+            background-color: #e5e4e8;
+            color: #000000;
+            cursor: hand;
+            font-weight: bold;
+            padding: 2px;
+            width: 100px;
+            text-align: center;
+            margin: 1px;
+        }
+        .buttonHover
+        {
+            border: 1px solid #316ac5;
+            background-color: #c1d2ee;
+            color: #000000;
+            cursor: hand;
+            font-weight: bold;
+            padding: 2px;
+            width: 100px;
+            text-align: center;
+            margin: 1px;
+        }
+        .buttonSelected
+        {
+            border: 1px solid #316ac5;
+            background-color: #316ac5;
+            color: #c1d2ee;
+            cursor: hand;
+            font-weight: bold;
+            padding: 2px;
+            width: 100px;
+            text-align: center;
+            margin: 1px;
+        }
+        /*span.buttonHover
+        {
+            border: 1px solid #93a070;
+            background-color: #ced1c3;
+        }*/
+        
+        .contentTitle
+        {
+            font-weight: bold;
+            font-size: 11pt;
+            font-family: Trebuchet MS, Tahoma, Verdana, Arial;
+        }
+        
+        #TdTitle
+        {
+            font-family: Arial;
+            font-size: 16pt;
+            text-align: center;
+            font-weight: bold;
+        }
+        #TdContent
+        {
+            border: 2px solid #e5e4e8;
+            font-family: Trebuchet MS, Tahoma, Verdana, Arial;
+            font-size: 10pt;
+        }
+        #DivContent
+        {
+            height: 320px;
+            width: 440px;
+            overflow: auto;
+            padding: 2px;
+        }
+        #DivContent table
+        {
+            font-family: Trebuchet MS, Tahoma, Verdana, Arial;
+            font-size: 10pt;
+        }
+        #TdButtons
+        {
+            
+        }
+    </style>
+</head>
+<body onLoad="return body_onLoad();">
+    <table cellspacing="1" cellpadding="1" border="0">
+        <tbody>
+            <tr>
+                <td colspan="2" id="TdTitle">The Keeper of Scores
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" valign="top" id="TdButtons" align="right">
+                <span id="SpanAdd" disabled="disabled" onclick="return SpanAdd_onClick();">Add New</span>
+                <span id="SpanEdit" disabled="disabled" onclick="return SpanEdit_onClick();">Edit</span>
+                <span id="SpanDelete" disabled="disabled" onclick="return SpanDelete_onClick();">Delete</span>
+                <!--span id="SpanChange" onclick="return SpanChange_onClick();">Change</span-->
+                <span id="SpanPrint" disabled="disabled" onclick="return SpanPrint_onClick();">Print...</span>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                <div id="DivEvents" onclick="return DivEvents_onClick();">Events</div>
+                <div id="DivScores" onclick="return DivScores_onClick();">Scores</div>
+                <div id="DivReports" onclick="return DivReports_onClick();">Reports</div>
+                </td>
+                <td valign="top" id="TdContent"><div id="DivContent">
+                </div></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<html xmlns:ie>
+<head>
+<style type="text/css">
+#cal
+{
+    behavior: url(calendar.htc);
+    width: 220px;
+    height: 200px;
+    cal--currentMonth-background-color: #ffffcc;
+    cal--currentMonth-color: #663399;
+    cal--currentMonth-font-family: Verdana, Arial, sans-serif;
+    cal--currentMonth-font-size: 8pt;
+    cal--currentMonth-text-align: center;
+    cal--currentMonth-vertical-align: middle;
+    cal--dayTitle-background-color: #ffcc66;
+    cal--offMonth-background-color: #ffffcc;
+    cal--offMonth-color: #cc9966;
+    cal--offMonth-font-family: Verdana, Arial, sans-serif;
+    cal--offMonth-font-size: 8pt;
+    cal--offMonth-text-align: center;
+    cal--offMonth-vertical-align: middle;
+    cal--selectedDay-background-color: #ffcc66;
+    cal--selectedDay-color: #ffffff;
+    cal--selectedDay-text-align: center;
+    cal--selectedDay-vertical-align: middle;
+    cal--title-font-size: 9pt;
+    cal--title-font-weight: bold;
+    cal--title-color: #ffffcc;
+    cal--title-background-color: #990000;
+}
+
+select, option, button
+{
+    font-family: tahoma, verdana, arial, sans-serif;
+    font-size: 8pt;
+}
+button
+{
+    width: 100px;
+    height: 24px;
+    margin: 1px;
+}
+body
+{
+    border: none;
+    margin: 4px;
+}
+</style>
+<title>Calendar</title>
+<script language="JScript">
+
+function body_onload()
+{
+    cal.gridLinesColor = "#ffcc66";
+    cal.gridCellEffect = "flat";
+    cal.showHorizontalGrid = "true";
+    cal.showVerticalGrid = "true";
+     
+    if(window.dialogArguments && window.dialogArguments["date"])
+    {
+        var d = new Date(window.dialogArguments["date"]);
+        cal.day = d.getDate();
+        cal.month = d.getMonth() + 1;
+        cal.year = d.getFullYear();
+    }
+     
+    var w, h;
+    w = document.body.clientWidth;
+    h = document.body.clientHeight;
+     
+    cal.style.height = (h - 40) + "px";
+    cal.style.width = (w - 12) + "px";
+}
+
+function ButtonToday_onclick()
+{
+    var d = new Date();
+    cal.day = d.getDate();
+    cal.month = d.getMonth() + 1;
+    cal.year = d.getFullYear();
+}
+
+function ButtonOK_onclick()
+{
+    var d = new Date();
+    d.setFullYear(cal.year, cal.month - 1, cal.day);
+    window.returnValue = d.getTime();
+    window.close();
+}
+
+function ButtonCancel_onclick()
+{
+    window.returnValue = null;
+    window.close();
+}
+
+</script>
+</head>
+<body onload="return body_onload();" scroll="no">
+
+<table><tbody>
+    <tr><td colspan="2"><ie:calendar id="cal"></ie:calendar></td></tr>
+    <tr>
+        <td width="106" align="left"><button id="ButtonToday" onclick="return ButtonToday_onclick();">Today</button></td>
+        <td align="right"><button id="ButtonOK" type="submit" onclick="return ButtonOK_onclick();">OK</button> 
+        <button id="ButtonCancel" type="reset" onclick="return ButtonCancel_onclick();">Cancel</button></td>
+    </tr>
+</tbody></table>
+
+</body>
+</html>

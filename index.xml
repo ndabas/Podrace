@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<podrace>
+    <title>Senior department</title>
+    <events href="events1.xml">Sports</events>
+    <events href="events2.xml">Extra-curricular</events>
+    <scores href="scores1.xml">Sports</scores>
+    <scores href="scores2.xml">Extra-curricular</scores>
+</podrace>  

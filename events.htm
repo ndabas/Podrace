@@ -1,0 +1,132 @@
+<html>
+    <head>
+    <title>Events</title>
+    <style type="text/css">
+    body, table, input, button, select
+    {
+        color: #000000;
+        font-family: Tahoma; font-size: 8.25pt;
+    }
+    #SelectCategory, #SelectName
+    {
+        width: 200px;
+    }
+    #ButtonOK, #ButtonCancel
+    {
+        width: 100px;
+        height: 24px;
+        margin: 1px;
+    }
+    body
+    {
+        border: none;
+        margin: 10px;
+    }
+    </style>
+    <script language="JScript">
+    
+    function body_onload()
+    {
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load("index.xml");
+        
+        var xmlNames = null;
+        
+        var name = window.dialogArguments ? window.dialogArguments["name"] : null;
+        if(name)
+        {
+            xmlNames = new ActiveXObject("Msxml2.DOMDocument.4.0");
+            xmlNames.async = false;
+        }
+        
+        var allEvents = xmlDoc.getElementsByTagName("events");
+        var node = null;
+        while(node = allEvents.nextNode())
+        {
+            var option = document.createElement("option");
+            option.value = node.selectSingleNode("@href").text;
+            option.text = node.text;
+            if(xmlNames != null)
+            {
+                xmlNames.load(option.value);
+                var allNames = xmlNames.getElementsByTagName("event");
+                var node = null;
+                while(node = allNames.nextNode())
+                {
+                    if(String(node.text).toLowerCase() == name.toLowerCase())
+                    {
+                        option.selected = true;
+                    }
+                }
+            }
+            
+            SelectCategory.add(option);
+        }
+        
+        SelectCategory_onchange();
+        
+        if(name)
+        {
+            SelectName.value = name;
+        }
+        
+        delete xmlDoc;
+    }
+    
+    function SelectCategory_onchange()
+    {
+        SelectName.disabled = true;
+        SelectName.options.length = 0;
+        
+        var xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        xmlDoc.async = false;
+        xmlDoc.load(SelectCategory.value);
+        
+        var allEvents = xmlDoc.getElementsByTagName("event");
+        var node = null;
+        while(node = allEvents.nextNode())
+        {
+            var option = document.createElement("option");
+            option.value = node.text;
+            option.text = node.text;
+            SelectName.add(option);
+        }
+        
+        SelectName.disabled = false;
+        
+        delete xmlDoc;
+    }
+    
+    function ButtonOK_onclick()
+    {
+        window.returnValue = SelectName.value;
+        window.close();
+    }
+    
+    function ButtonCancel_onclick()
+    {
+        window.returnValue = null;
+        window.close();
+    }
+    
+    </script>
+    </head>
+    <body onload="return body_onload();">
+        <table border="0" cellspacing="1" cellpadding="2">
+            <tbody><tr>
+                <td valign="top">
+                Event category:<br />
+                <select id="SelectCategory" onchange="return SelectCategory_onchange();"></select>
+                <br />
+                Event name:<br />
+                <select id="SelectName" disabled="true"></select>
+                </td>
+                <td valign="top" id="TdButtons">
+                <button id="ButtonOK" onclick="return ButtonOK_onclick();">OK</button><br />
+                <button id="ButtonCancel" onclick="return ButtonCancel_onclick();">Cancel</button>
+                </td>
+            </tr></tbody>
+        </table>
+    </body>
+</html>

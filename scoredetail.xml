@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<form title="Event">
+<head>
+    <script language="JScript">
+    <![CDATA[
+    
+    var monthNames = new Array(
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    );
+    
+    function Form_Load()
+    {
+        var args = window.dialogArguments;
+        if(args["EventName"] != null)
+        {
+            inputEventName.value = args["EventName"];
+            valueEventName.value = args["EventName"];
+        }
+        if(args["EventDate"] != -1)
+        {
+            valueEventDate.value = args["EventDate"];
+            d = new Date(parseInt(args["EventDate"]));
+            var s = "";
+            s += d.getDate() + " ";
+            s += monthNames[d.getMonth()] + " ";
+            s += d.getYear();
+            inputEventDate.value = s;
+        }
+        if(args["Pos1Name"] != null)
+        {
+            valuePos1Name.value = args["Pos1Name"];
+        }
+        if(args["Pos2Name"] != null)
+        {
+            valuePos2Name.value = args["Pos2Name"];
+        }
+        if(args["Pos3Name"] != null)
+        {
+            valuePos3Name.value = args["Pos3Name"];
+        }
+        if(args["Pos4Name"] != null)
+        {
+            valuePos4Name.value = args["Pos4Name"];
+        }
+    }
+    
+    function Form_OK()
+    {
+        if(!valueEventName.value.length)
+        {
+            alert("You must enter a value for the event name.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    function Form_Cancel()
+    {
+        return true;
+    }
+    
+    function ButtonSelectDate_onclick()
+    {
+        var d = window.showModalDialog("calendar.htm",
+            valueEventDate.value == -1 ? null : {date:parseInt(valueEventDate.value)},
+            "dialogHeight: 280px; dialogWidth: 360px; status: no; help: no;");
+        if(d)
+        {
+            valueEventDate.value = d;
+            d = new Date(d);
+            var s = "";
+            s += d.getDate() + " ";
+            s += monthNames[d.getMonth()] + " ";
+            s += d.getYear();
+            inputEventDate.value = s;
+        }
+    }
+    
+    function ButtonSelectName_onclick()
+    {
+        var eventName = window.showModalDialog("events.htm",
+            valueEventName.value.length ? {name:valueEventName.value} : null,
+            "dialogHeight: 160px; dialogWidth: 340px; status: no; help; no");
+        if(eventName)
+        {
+            inputEventName.value = eventName;
+            valueEventName.value = eventName;
+        }        
+    }
+    
+    ]]>
+    </script>
+</head>
+<layout>
+    <span>
+    Event name: <br />
+    <input type="text" id="inputEventName" style="width: 140px;" readonly="true" />
+    <input type="hidden" id="valueEventName" value=""/>
+    <button id="ButtonSelectName" onclick="return ButtonSelectName_onclick();">...</button>
+    <br />
+    Event date: <br />
+    <input type="text" id="inputEventDate" style="width: 140px;" readonly="true" />
+    <input type="hidden" id="valueEventDate" value="-1" />
+    <button id="ButtonSelectDate" onclick="return ButtonSelectDate_onclick();">...</button>
+    <br /><br />
+    1<sup>st</sup> Position: <br />
+    <select id="valuePos1Name" style="width: 180px;">
+    <option value="D">Dayanand House</option>
+    <option value="G">Gurunanak House</option>
+    <option value="K">Kabir House</option>
+    <option value="V">Vivekanand House</option>
+    </select>
+    <br />
+    2<sup>nd</sup> Position: <br />
+    <select id="valuePos2Name" style="width: 180px;">
+    <option value="D">Dayanand House</option>
+    <option value="G">Gurunanak House</option>
+    <option value="K">Kabir House</option>
+    <option value="V">Vivekanand House</option>
+    </select>
+    <br />
+    3<sup>rd</sup> Position: <br />
+    <select id="valuePos3Name" style="width: 180px;">
+    <option value="D">Dayanand House</option>
+    <option value="G">Gurunanak House</option>
+    <option value="K">Kabir House</option>
+    <option value="V">Vivekanand House</option>
+    </select>
+    <br />
+    4<sup>th</sup> Position: <br />
+    <select id="valuePos4Name" style="width: 180px;">
+    <option value="D">Dayanand House</option>
+    <option value="G">Gurunanak House</option>
+    <option value="K">Kabir House</option>
+    <option value="V">Vivekanand House</option>
+    </select>
+    <br />
+    </span>
+</layout>
+</form>  

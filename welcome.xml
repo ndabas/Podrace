@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<div>
+    <div class="contentTitle">
+    Welcome!
+    </div><br />
+    <div>This is The Keeper of Scores, developed by the Great 
+    Nikhil Dabas himself.</div><br />
+    <div>Here is a short guide to using this.</div>
+    <div>Click the <strong>Events</strong> button on the left
+    to see a list of event categories. Clicking on a category
+    will display a list of all events. You can then use the
+    <strong>Add New</strong> button on the top to add a new event,
+    the <strong>Edit</strong> button to change an event name, 
+    and the <strong>Delete</strong> button to delete an event.
+    You must select an event by clicking on the name before trying
+    to edit or delete it.</div>
+    <div>The <strong>Scores</strong> button can be used to access
+    the results stored in the database. Again, you will be
+    presented with a list of categories, and clicking a category
+    will show all results in that category. The 
+    <strong>Add New</strong>, <strong>Edit</strong>, and
+    <strong>Delete</strong> buttons behave as expected.</div>
+    <div>You can use the <strong>Reports</strong> button to
+    create score cards for any category. Click on
+    <strong>Reports</strong>, then select the date range by
+    selecting the first and last dates. Clicking on the
+    buttons with an ellipsis (<strong>...</strong>) on them will show you a calendar.
+    After you have selected the date range for the report,
+    clicking on the desired category will instantly generate a
+    report.</div>
+    <div>Click the <strong>Print...</strong> button to print
+    any page. Note that this will start Microsoft Word
+    with the current page; you must select Print from the File
+    menu to actually print the page.</div>
+</div>

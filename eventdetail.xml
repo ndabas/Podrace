@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<form title="Event">
+<head>
+    <script language="JScript">
+    <![CDATA[
+    
+    function Form_Load()
+    {
+        if(window.dialogArguments["EventName"] != null)
+        valueEventName.value = window.dialogArguments["EventName"];
+    }
+    
+    function Form_OK()
+    {
+        if(!valueEventName.value.length)
+        {
+            alert("You must enter a value for the event name.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    function Form_Cancel()
+    {
+        return true;
+    }
+    
+    ]]>
+    </script>
+</head>
+<layout>
+    <span>Event name: <br />
+    <input type="text" id="valueEventName" style="width: 180px;"/></span>
+</layout>
+</form>  
